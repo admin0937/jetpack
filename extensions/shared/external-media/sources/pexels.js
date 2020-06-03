@@ -10,7 +10,6 @@ import { sample } from 'lodash';
  * Internal dependencies
  */
 import { SOURCE_PEXELS, PEXELS_EXAMPLE_QUERIES } from '../constants';
-import withMedia from './with-media';
 import MediaBrowser from '../media-browser';
 import { getApiUrl } from './api';
 
@@ -55,7 +54,7 @@ function PexelsMedia( props ) {
 	);
 
 	// Load initial results for the random example query.
-	useEffect( getNextPage, [] );
+	useEffect( () => getNextPage( {}, true ), [ getNextPage ] );
 
 	const searchFormEl = useRef( null );
 
@@ -113,4 +112,4 @@ function PexelsMedia( props ) {
 	);
 }
 
-export default withMedia()( PexelsMedia );
+export default PexelsMedia;

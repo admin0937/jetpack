@@ -8,6 +8,7 @@ import { useState } from '@wordpress/element';
  */
 import { getExternalLibrary } from '../sources';
 import MediaButtonMenu from './media-menu';
+import ExternalMediaModal from '../external-media-modal';
 
 const isFeaturedImage = props =>
 	props.unstableFeaturedImageFlow ||
@@ -40,8 +41,11 @@ function MediaButton( props ) {
 				isReplace={ isReplaceMenu( mediaProps ) }
 				isFeatured={ isFeaturedImage( mediaProps ) }
 			/>
-
-			{ ExternalLibrary && <ExternalLibrary onClose={ closeLibrary } { ...mediaProps } /> }
+			<ExternalMediaModal
+				{ ...mediaProps }
+				ExternalLibrary={ ExternalLibrary }
+				onClose={ closeLibrary }
+			/>
 		</>
 	);
 }

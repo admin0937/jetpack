@@ -1,8 +1,9 @@
 /**
  * WordPress dependencies
  */
-import { Button, MenuItem, MenuGroup, Dropdown, NavigableMenu } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { withDispatch } from '@wordpress/data';
+import { Button, MenuItem, MenuGroup, Dropdown, NavigableMenu } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -10,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import MediaSources from './media-sources';
 
 function MediaButtonMenu( props ) {
-	const { mediaProps, open, setSelectedSource, isFeatured, isReplace } = props;
+	const { mediaProps, openModal, open, setSelectedSource, isFeatured, isReplace } = props;
 	const originalComponent = mediaProps.render;
 
 	if ( isReplace ) {
@@ -30,6 +31,9 @@ function MediaButtonMenu( props ) {
 	const changeSource = ( source, onToggle ) => {
 		setSelectedSource( source );
 		onToggle();
+		// openModal('edit-post/options');
+		// openModal('edit-post/keyboard-shortcut-help');
+		openModal( 'edit-post/external-media' );
 	};
 	const openLibrary = onToggle => {
 		onToggle();
@@ -77,4 +81,6 @@ function MediaButtonMenu( props ) {
 	);
 }
 
-export default MediaButtonMenu;
+export default withDispatch( dispatch => ( {
+	openModal: dispatch( 'core/edit-post' ).openModal,
+} ) )( MediaButtonMenu );
