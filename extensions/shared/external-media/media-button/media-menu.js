@@ -31,8 +31,6 @@ function MediaButtonMenu( props ) {
 	const changeSource = ( source, onToggle ) => {
 		setSelectedSource( source );
 		onToggle();
-		// openModal('edit-post/options');
-		// openModal('edit-post/keyboard-shortcut-help');
 		openModal( 'edit-post/external-media' );
 	};
 	const openLibrary = onToggle => {

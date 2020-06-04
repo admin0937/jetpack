@@ -12,6 +12,7 @@ import { compose } from '@wordpress/compose';
 import { withSelect, withDispatch } from '@wordpress/data';
 import { Component } from '@wordpress/element';
 import { withNotices, Modal } from '@wordpress/components';
+import { UP, DOWN, LEFT, RIGHT } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,6 +52,48 @@ class ExternalMediaModal extends Component {
 			requiresAuth: false,
 			path: { ID: PATH_RECENT },
 		};
+
+		this.arrowKeysPropagationStopped = false;
+	}
+
+	componentDidUpdate() {
+		this.handleArrowKeysPropagation();
+	}
+
+	/**
+	 * When the External Media modal is open, pressing any arrow key causes it to
+	 * close immediately. This is happening because React fires blur event on the
+	 * Image block re-render, which seems to be triggered only by arrow keydown
+	 * event (possibly caught by the editor canvas during the re-render cycle).
+	 * Right after that, it tries to restore the focus to the modal element, but
+	 * because the blur has already been triggered, modal's "withFocusOutside"
+	 * handler thinks that the outside of the modal was clicked so it closes it
+	 * anyway. It wouldn't happen if the modal was isolated from the Image block
+	 * renderer, but because of the nature of this implementation (customized
+	 * media upload component) we're not really able to do that at this moment.
+	 *
+	 * This handler makes sure that the keydown event doesn't propagate further,
+	 * which fixes the issue described above while still keeping arrow keys
+	 * functional inside the modal (i.e. when navigating inside Pexels seach input
+	 * text or choosing filter from one of the Google Photos filters' select
+	 * dropdown).
+	 */
+	handleArrowKeysPropagation() {
+		const eventListenerEl = document.querySelector( '.components-modal__content' );
+
+		if ( eventListenerEl && ! this.arrowKeysPropagationStopped ) {
+			eventListenerEl.addEventListener( 'keydown', () => {
+				if ( [ UP, DOWN, LEFT, RIGHT ].includes( event.keyCode ) ) {
+					event.stopPropagation();
+				}
+			} );
+
+			this.arrowKeysPropagationStopped = true;
+		}
+
+		if ( ! eventListenerEl && this.arrowKeysPropagationStopped ) {
+			this.arrowKeysPropagationStopped = false;
+		}
 	}
 
 	mergeMedia( initial, media ) {
